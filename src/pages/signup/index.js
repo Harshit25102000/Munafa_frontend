@@ -135,7 +135,7 @@ function Signup() {
 
   const handleVerifyotp = () => {
     setLoading(true)
-    fetch(BACKEND_URL + '/teacher/verify_signup_otp', {
+    fetch(BACKEND_URL + '/verify_signup_otp', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -181,7 +181,7 @@ function Signup() {
 
   const handleSignup = () => {
     setLoading(true)
-    fetch(BACKEND_URL + '/teacher/signup', {
+    fetch(BACKEND_URL + '/signup', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -224,6 +224,7 @@ function Signup() {
 
   return (
     <div>
+      
        {isalert && (
         <Alerts variant={variant} message={alertMessage} isalert={true} />
        )}

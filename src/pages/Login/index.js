@@ -41,7 +41,7 @@ function Login() {
 
   const handleLogin = () => {
     setLoading(true)
-    fetch(BACKEND_URL + '/teacher/login', {
+    fetch(BACKEND_URL + '/login', {
       method: 'POST',
       credentials: 'include',
       headers: {

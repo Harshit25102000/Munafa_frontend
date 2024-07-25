@@ -6,7 +6,7 @@ export default function Spinner() {
     <>
      
       <MDBSpinner className='mx-2' color='info'>
-        <span className='visually-hidden'>Loading...</span>
+        <span className='visually-hidden'></span>
       </MDBSpinner>
      
     </>
