@@ -113,20 +113,20 @@ function Home() {
                             <Card style={{ marginTop: "30px", width: "85%" }}>
 
                                 <Card.Body>
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <Card.Title>TATA</Card.Title>
+                                    <Row>
+                                        <Col>
+                                            <Card.Title style={{ fontWeight: "bold" }}>TATA</Card.Title>
                                             <Card.Text>
                                                 Rs 312.78
                                             </Card.Text>
-                                        </div>
-                                        <div>
-                                            <div class="d-flex flex-column">
-                                                <Button variant="primary" style={{ marginTop: "10px", backgroundColor: "green" }} onClick={() => navigate("/attendance")}>BUY</Button>
-                                                <Button variant="primary" style={{ marginTop: "10px", backgroundColor: "red" }} onClick={() => navigate("/attendance")}>SELL</Button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        </Col>
+
+                                        <Col>
+
+                                            <Button variant="primary" style={{ marginTop: "10px", backgroundColor: "green",marginRight:"2px" }} onClick={() => navigate("/attendance")}>BUY</Button>
+                                            <Button variant="primary" style={{ marginTop: "10px", backgroundColor: "red",marginLeft:"2px" }} onClick={() => navigate("/attendance")}>SELL</Button>
+                                        </Col>
+                                    </Row>
                                 </Card.Body>
                             </Card>
                             {classdata.map((item, index) => (
@@ -146,14 +146,14 @@ function Home() {
                     </Col>
                     <Col>
 
-                        <div style={{marginTop:"5%"}}>
+                        <div style={{ marginTop: "5%" }}>
 
-                            <h3 style={{marginBottom:"5%"}}>Add something to your watchlist</h3>
-                            <div class="input-group mb-3">
+                            <h3 style={{ marginBottom: "5%" }}>Add something to your watchlist</h3>
+                            <div class="input-group mb-3" style={{ width: "50%" }}>
                                 <div class="input-group-prepend">
                                     <button class="btn btn-outline-secondary" type="button">Add</button>
                                 </div>
-                                <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1"/>
+                                <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1" />
                             </div>
                         </div>
                     </Col>
