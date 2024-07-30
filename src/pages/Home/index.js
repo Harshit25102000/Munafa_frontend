@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './home.css';
+import Spinner from '../../components/Spinner';
 import { BACKEND_URL } from "../../config";
 import NavbarComponent from '../../components/Navbar';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
+import { Line } from 'react-chartjs-2';
 import Col from 'react-bootstrap/Col';
 import ApexCharts from 'apexcharts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -13,31 +15,44 @@ import Card from 'react-bootstrap/Card';
 import Chart from 'chart.js/auto';
 import Alerts from '../../components/alert';
 function Home() {
-    const [loading,setLoading]=useState(false)
+    // const ctx = chartRef.current.getContext('2d');
+    const [show,setShow]=useState(false)
   const [variant,setVariant]=useState("");
   const [alertMessage,setAlertMessage]=useState("")
   const [isalert,setIsalert]=useState(false)
-    const [email, setEmail] = useState("")
+  const [isLoading,setLoading]=useState(false);
     const [error, setErrorMessage] = useState("")
-    const [classdata, setClassData] = useState([])
+    const [prices,setPrices]=useState([])
     const [isAdd,setIsAdd]=useState(false)
+    const [isChart,setIsChart]=useState(false)
     const navigate = useNavigate();
-    const [date,setDate]=useState([])
-    const [close,setClose]=useState([])
-    const chartRef = useRef(null);
-    let myChart = null;
+
+    const [chartData, setChartData] = useState({
+        labels: [],
+                        datasets: [
+                            {
+                                label: 'Price Overview',
+                                data: [],
+                                borderColor: 'blue',
+                                backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                            },
+                        ],
+    });
+   
     const handleAdd = () => {
         setIsAdd(true)
     }
 
-    const fetchChartData = () => {
-        fetch(BACKEND_URL + '/get_fetch_data', {
+    const fetchChartData = (symbol) => {
+        console.log(symbol);
+        fetch(BACKEND_URL + '/get_chart_data', {
             method: 'GET',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 withCredentials: true
             },
+            body: JSON.stringify({ symbol })
 
 
         })
@@ -45,9 +60,17 @@ function Home() {
             .then(async (response) => {
                 const data = await response.json();
                 if (data.success && data.data && data.data.status === 'SUCCESS') {
-
-                    setClose(data.data.close);
-                    setDate(data.data.date);
+                    const close_vals = data.data.close;
+                    const date_vals=data.data.date;
+                    setChartData({labels: date_vals,
+                        datasets: [
+                            {
+                                label: 'Price Overview',
+                                data: close_vals,
+                                borderColor: 'blue',
+                                backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                            },
+                        ],});
 
 
                 } else {
@@ -68,37 +91,26 @@ function Home() {
         
                 });
 
+              
+                
+                // myChart = new Chart(ctx, {
+                //     type: 'line',
+                //     data:chartData,
+                //     options: {
+                //         responsive: true,
+                //         maintainAspectRatio: false,
+                //     },
+        
+                // });
+
+            setIsChart(true)
+
     }
 
-    useEffect(() => {
-        if (myChart) {
-            myChart.destroy();
-        }
-        const ctx = chartRef.current.getContext('2d');
-        myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: date,
-                datasets: [
-                    {
-                        label: 'Price Overview',
-                        data: close,
-                        borderColor: 'blue',
-                        backgroundColor: 'rgba(0, 0, 255, 0.2)',
-                    },
-                ],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-            },
-
-        });
-
-    }, []);
+   
     useEffect(() => {
 
-
+        setShow(false);
         fetch(BACKEND_URL + '/@me', {
             method: 'GET',
             credentials: 'include',
@@ -127,8 +139,54 @@ function Home() {
 
             });
 
+            // if (myChart) {
+            //     myChart.destroy();
+            // }
 
 
+
+            fetch(BACKEND_URL + '/get_all_price', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    withCredentials: true
+                },
+    
+    
+            })
+    
+                .then(async (response) => {
+                    const data = await response.json();
+                    if (data.success && data.data && data.data.status === 'SUCCESS') {
+                        setPrices(data.data.data)
+                        
+                        setShow(true)
+    
+                    } else {
+                        setErrorMessage(data.message || 'Failed. Please try again.');
+                        setVariant("danger")
+                        setAlertMessage(error)
+                        setLoading(false)
+                      
+                        setIsalert(true)
+                        setShow(true)
+                      }
+                    })
+                    .catch((error) => {
+                      setVariant("danger")
+                      setAlertMessage(error)
+                      setLoading(false)
+                   
+                      setIsalert(true)
+                      setShow(true)
+    
+                });
+    
+                // if (myChart) {
+                //     myChart.destroy();
+                // }
+               
     }, []);
 
 
@@ -136,6 +194,7 @@ function Home() {
     return (
         <div>
             <NavbarComponent />
+            {show?(<div>
             {isalert && (
         <Alerts variant={variant} message={alertMessage} isalert={true} />
        )}
@@ -207,31 +266,34 @@ function Home() {
                            
                         </div>
                         <div style={{ overflowY: "scroll", height: "530px" }}>
-                            <Card style={{ marginTop: "30px", width: "85%" }}>
+                        {prices.map((item, index) => (
+                            <Card key={index} style={{ marginTop: "30px", width: "85%" }}>
 
                                 <Card.Body>
                                     <Row>
                                         <Col>
-                                            <Button onClick={fetchChartData}><Card.Title style={{ fontWeight: "bold" }}>TATA</Card.Title></Button>
+                                            <Button onClick={() => fetchChartData(item.symbol)} style={{background:"None",border:"None",color:"black"}}><Card.Title style={{ fontWeight: "bold" }}>{item.symbol}</Card.Title></Button>
                                             <Card.Text>
-                                                BID - 23.5
+                                                BID - {item.bid}
                                             </Card.Text>
                                             <Card.Text>
-                                                ASK - 23.5
+                                                ASK - {item.ask}
                                             </Card.Text>
                                         </Col>
 
                                         <Col>
                                             <Card.Text>
-                                                Price - 23.5
+                                                Price - {item.price}
                                             </Card.Text>
+                                            <input type="number" id="quantity" name="quantity" placeholder='Qty'style={{width:"70%"}}/>
                                             <Button variant="primary" style={{ marginTop: "10px", backgroundColor: "green", marginRight: "2px" }} onClick={() => navigate("/attendance")}>BUY</Button>
                                             <Button variant="primary" style={{ marginTop: "10px", backgroundColor: "red", marginLeft: "2px" }} onClick={() => navigate("/attendance")}>SELL</Button>
                                         </Col>
                                     </Row>
                                 </Card.Body>
                             </Card>
-                            {classdata.map((item, index) => (
+                            ))}
+                            {/* {classdata.map((item, index) => (
                                 <Card key={index} style={{ marginTop: "30px", width: "85%" }}>
 
                                     <Card.Body>
@@ -242,21 +304,30 @@ function Home() {
                                         <Button variant="primary" style={{ marginTop: "10px" }} onClick={() => navigate("/attendance")}>Mark Attendance</Button>
                                     </Card.Body>
                                 </Card>
-                            ))}
+                            ))} */}
 
                         </div>
                     </Col>
                     <Col>
+                    {isChart && ( <div style={{ marginTop: "15%" }}>
+                     
+                     <div className="chart-container">
 
-                        <div style={{ marginTop: "5%" }}>
-                            <div className="chart-container">
-                                <canvas ref={chartRef} style={{ height: "35vh" }} />
-                            </div>
-
-                        </div>
+                         {/* <canvas ref={chartRef} style={{ height: "35vh" }} /> */}
+                        
+                         <Line data={chartData} style={{width:"35vw",height:"30vh"}}/>
+                     </div>
+                     <Button style={{background:"None",border:"None",color:"black",marginTop:"10px",fontWeight:"700"}}>View More Info</Button>
+                 </div>)}
+                       
                     </Col>
                 </Row>
-            </Container>
+            </Container></div>):(
+             <div style={{width:"200%",marginTop:"200px",marginLeft:"750px"}}>
+                    <Spinner />
+                    <h5 style={{marginTop:"auto",marginLeft:"auto"}} >Slow response due to API throttle</h5>
+                    </div>
+            )}:
         </div>
     );
 }
