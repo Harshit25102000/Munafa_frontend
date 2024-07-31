@@ -409,19 +409,17 @@ function Home() {
                                                     <Popup trigger=
                                                         {<button style={{ marginTop: "10px", backgroundColor: "green", marginRight: "2px",width:"60px",height:"30px",borderRadius:"9px",color:"white" }}> BUY </button>}
                                                         position="right center">
-                                                            (close => (
+                                                            
                                                         <div>Do you want to add stop loss or limit ?</div>
                                                         <button style={{border:"None"}}>Yes</button>
                                                         <button onClick={() => {executeTrade("buy",item.symbol,item.bid,item.ask);close();}}>No</button>
-                                                            ))
                                                     </Popup>
                                                     <Popup trigger=
                                                         {<button style={{ marginTop: "10px", backgroundColor: "red", marginRight: "2px",width:"60px",height:"30px",borderRadius:"9px",color:"white" }}> SELL </button>}
                                                         position="right center">
-                                                            (close => (
                                                         <div>Do you want to add stop loss or limit ?</div>
                                                         <button style={{border:"None"}}>Yes</button>
-                                                        <button onClick={() => {executeTrade("sell",item.symbol,item.bid,item.ask);close();}}>No</button>))
+                                                        <button onClick={() => {executeTrade("sell",item.symbol,item.bid,item.ask);close();}}>No</button>
                                                     </Popup>
                                                 </Col>
                                             </Row>
