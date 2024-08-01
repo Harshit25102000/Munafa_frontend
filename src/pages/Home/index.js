@@ -16,26 +16,54 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Chart from 'chart.js/auto';
 import Alerts from '../../components/alert';
+import { fontString } from 'chart.js/helpers';
 function Home() {
     // const ctx = chartRef.current.getContext('2d');
     const [show, setShow] = useState(false)
+    const [stopLoss, setStopLoss] = useState('');
+    const [action,setAction]=useState('')
+    const [limitPrice, setLimitPrice] = useState('');
     const [variant, setVariant] = useState("");
     const [alertMessage, setAlertMessage] = useState("")
     const [isalert, setIsalert] = useState(false)
     const [isLoading, setLoading] = useState(false);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [error, setErrorMessage] = useState("")
     const [prices, setPrices] = useState([])
     const [indices, setIndex] = useState([])
+    const [symbol,setSymbol] =useState("")
+    const [bid,setBid] =useState("")
+    const [ask,setAsk] =useState("")
     const [isAdd, setIsAdd] = useState(false)
     const [isChart, setIsChart] = useState(false)
-    const [qty,setQty] = useState(0)
+    const [qty, setQty] = useState(0)
     const navigate = useNavigate();
 
 
     const handleQty = (event) => {
         const newqty = event.target.value;
         setQty(newqty)
-      };
+    };
+
+    const openPopup = () => {
+        setIsPopupOpen(true);
+    };
+
+    const closePopup = (e) => {
+        
+        console.log("c")
+        
+        setIsPopupOpen(false);
+    };
+
+    const handleData=(action,symbol,bid,ask)=>{
+        setAction(action);
+        setSymbol(symbol);
+        setBid(bid);
+        
+        setAsk(ask);
+        executeTrade();
+    }
 
     const [chartData, setChartData] = useState({
         labels: [],
@@ -120,8 +148,8 @@ function Home() {
     }
 
 
-    const executeTrade = (action,symbol,bid,ask) => {
-        console.log(action);
+    const executeTrade = () => {
+        console.log("running");
         fetch(BACKEND_URL + '/execute_trade', {
             method: 'POST',
             credentials: 'include',
@@ -129,78 +157,44 @@ function Home() {
                 'Content-Type': 'application/json',
                 withCredentials: true
             },
-            body: JSON.stringify({ action,qty,symbol,bid,ask })
+            body: JSON.stringify({ action, qty, symbol, bid, ask,stopLoss,limitPrice })
 
 
         })
-        .then(async (response) => {
-            const data = await response.json(); 
-            if (data.success && data.data && data.data.status === 'SUCCESS') {
-              setVariant("success")
-              setAlertMessage("Transaction Successfull")
-             
-              setIsalert(true)
-              setLoading(false)
-              
-            } else {
-              setErrorMessage(data.message || 'Failed. Please try again.');
-              setVariant("danger")
-              setAlertMessage(error)
-              setLoading(false)
-            
-              setIsalert(true)
-            }
-          })
-          .catch((error) => {
-            setVariant("danger")
-            setAlertMessage(error)
-            setLoading(false)
-         
-            setIsalert(true)
-  
-          });
-  
-
-            
-    };
-
-    useEffect(() => {
-
-        setShow(false);
-        fetch(BACKEND_URL + '/@me', {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                withCredentials: true
-            },
-
-
-        })
-
             .then(async (response) => {
                 const data = await response.json();
                 if (data.success && data.data && data.data.status === 'SUCCESS') {
+                    setVariant("success")
+                    setAlertMessage("Transaction Successfull")
 
-                    ;
-
+                    setIsalert(true)
+                    setLoading(false)
 
                 } else {
-                    navigate("/");
+                    setErrorMessage(data.message || 'Failed. Please try again.');
+                    setVariant("danger")
+                    setAlertMessage(error)
+                    setLoading(false)
 
+                    setIsalert(true)
                 }
+                setStopLoss("")
+                setLimitPrice("")
             })
             .catch((error) => {
-                navigate("/");
+                setVariant("danger")
+                setAlertMessage(error)
+                setLoading(false)
+
+                setIsalert(true)
 
             });
 
-        // if (myChart) {
-        //     myChart.destroy();
-        // }
 
 
+    };
 
+    const update_prices=()=>{
         fetch(BACKEND_URL + '/get_all_price', {
             method: 'GET',
             credentials: 'include',
@@ -240,7 +234,52 @@ function Home() {
                 setShow(true)
 
             });
+    }
 
+    useEffect(() => {
+        
+        setTimeout(() => {
+            setIsalert(false);
+        }, 3000);
+        
+        setShow(false);
+        fetch(BACKEND_URL + '/@me', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                withCredentials: true
+            },
+
+
+        })
+
+            .then(async (response) => {
+                const data = await response.json();
+                if (data.success && data.data && data.data.status === 'SUCCESS') {
+
+                    ;
+
+
+                } else {
+                    navigate("/");
+
+                }
+            })
+            .catch((error) => {
+                navigate("/");
+
+            });
+            const interval = setInterval(update_prices, 5000);
+        return () => clearInterval(interval);
+
+        // if (myChart) {
+        //     myChart.destroy();
+        // }
+
+
+
+        
         // if (myChart) {
         //     myChart.destroy();
         // }
@@ -287,6 +326,9 @@ function Home() {
 
 
 
+        // when the component is mounted, the alert is displayed for 3 seconds
+       
+
     }, []);
 
 
@@ -295,9 +337,7 @@ function Home() {
         <div>
             <NavbarComponent />
             {show ? (<div>
-                {isalert && (
-                    <Alerts variant={variant} message={alertMessage} isalert={true} />
-                )}
+
                 <header id="header" class="d-flex align-items-center" style={{ backgroundColor: "#f2f2f2" }}>
 
 
@@ -365,7 +405,9 @@ function Home() {
                 </header>
 
                 <Container>
-
+                    {isalert && (
+                        <Alerts variant={variant} message={alertMessage} isalert={true} />
+                    )}
                     <Row>
                         <Col>
                             <div>
@@ -393,33 +435,47 @@ function Home() {
                                             <Row>
                                                 <Col>
                                                     <Button onClick={() => fetchChartData(item.symbol,)} style={{ background: "None", border: "None", color: "black" }}><Card.Title style={{ fontWeight: "bold" }}>{item.symbol}</Card.Title></Button>
-                                                    <Card.Text>
-                                                        BID - {item.bid}
+                                                    <Row style={{marginLeft:"2%"}}>
+                                                    <Col>
+                                                    <Card.Text style={{fontWeight:"bold"}}>
+                                                        BID 
+                                                    </Card.Text>
+                                                    <Card.Text >
+                                                        {item.bid}
+                                                    </Card.Text>
+
+                                                    </Col>
+                                                    <Col>
+                                                    <Card.Text style={{fontWeight:"bold"}}>
+                                                        ASK
                                                     </Card.Text>
                                                     <Card.Text>
-                                                        ASK - {item.ask}
+                                                      {item.ask}
                                                     </Card.Text>
+                                                    </Col>
+                                                    </Row>
                                                 </Col>
 
                                                 <Col>
                                                     <Card.Text>
                                                         Price - {item.price}
                                                     </Card.Text>
-                                                    <input type="number" id="quantity" name="quantity" placeholder='Qty' style={{ width: "70%" }} onChange={handleQty}/>
+                                                    <input type="number" id="quantity" name="quantity" placeholder='Qty' style={{ width: "70%" }} onChange={handleQty} />
                                                     <Popup trigger=
-                                                        {<button style={{ marginTop: "10px", backgroundColor: "green", marginRight: "2px",width:"60px",height:"30px",borderRadius:"9px",color:"white" }}> BUY </button>}
+                                                        {<button style={{ marginTop: "10px", backgroundColor: "green", marginRight: "2px", width: "62px", height: "30px", borderRadius: "9px", color: "white",fontSize:"11px" }}> BUY </button>}
                                                         position="right center">
-                                                            
+
                                                         <div>Do you want to add stop loss or limit ?</div>
-                                                        <button style={{border:"None"}}>Yes</button>
-                                                        <button onClick={() => {executeTrade("buy",item.symbol,item.bid,item.ask);close();}}>No</button>
+                                                        <button style={{ border: "None" }} onClick={() => {setAction("buy");setSymbol(item.symbol);setBid(item.bid);setAsk(item.ask);setIsPopupOpen(true)}} >Yes</button>
+                                                        <button onClick={() =>handleData("buy",item.symbol,item.bid,item.ask)}>No</button>
                                                     </Popup>
                                                     <Popup trigger=
-                                                        {<button style={{ marginTop: "10px", backgroundColor: "red", marginRight: "2px",width:"60px",height:"30px",borderRadius:"9px",color:"white" }}> SELL </button>}
+                                                        {<button style={{ marginTop: "10px", backgroundColor: "red", marginRight: "2px", width: "62px", height: "30px", borderRadius: "9px", color: "white",fontSize:"11px" }}> SELL </button>}
                                                         position="right center">
+
                                                         <div>Do you want to add stop loss or limit ?</div>
-                                                        <button style={{border:"None"}}>Yes</button>
-                                                        <button onClick={() => {executeTrade("sell",item.symbol,item.bid,item.ask);close();}}>No</button>
+                                                        <button style={{ border: "None" }} onClick={() => {setAction("sell");setSymbol(item.symbol);setBid(item.bid);setAsk(item.ask);setIsPopupOpen(true)}}>Yes</button>
+                                                        <button onClick={() => handleData("sell",item.symbol,item.bid,item.ask)}>No</button>
                                                     </Popup>
                                                 </Col>
                                             </Row>
@@ -440,7 +496,47 @@ function Home() {
                             ))} */}
 
                             </div>
+
+                            {isPopupOpen && (
+                                <div className="popup-overlay">
+                                    <div className="popup">
+                                        <h2 style={{fontSize:"22px"}}>Order Details</h2>
+                                        <div className="popup-content">
+                                            <div className="popup-row">
+                                                <div className="popup-column">
+                                                    <h3 style={{fontSize:"22px"}}>Qty</h3>
+                                                    <p>{qty}</p>
+                                                </div>
+                                                <div className="popup-column">
+                                                    <h3 style={{fontSize:"22px"}}>Stop Loss</h3>
+                                                    <input
+                                                        type="number"
+                                                        value={stopLoss}
+                                                        onChange={(e) => setStopLoss(e.target.value)}
+                                                    />
+                                                </div>
+                                                <div   className="popup-column">
+                                                    <h3 style={{fontSize:"22px"}}>Limit</h3>
+                                                    <input
+                                                        type="number"
+                                                        value={limitPrice}
+                                                        onChange={(e) => setLimitPrice(e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            
+                                            <button  onClick={() => {executeTrade();closePopup();}} style={{marginLeft:"34%"}}>Proceed</button>
+                                            
+                                          
+                                           
+                                            <button  onClick={closePopup} style={{marginLeft:"34%",background:"None",color:"red"}}>Cancel</button>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            )}
                         </Col>
+
                         <Col>
                             {isChart && (<div style={{ marginTop: "15%" }}>
 

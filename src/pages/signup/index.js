@@ -278,7 +278,7 @@ function Signup() {
                   </div>
              
                  
-                    <MDBBtn className='mb-4' size='lg' style={{ marginLeft: "70px" }} onClick={handleSendotp}>Send OTP</MDBBtn>
+                    <MDBBtn className='mb-4' size='lg' style={{ marginLeft: "45px" }} onClick={handleSendotp}>Send OTP</MDBBtn>
               
                 </div>
               )}

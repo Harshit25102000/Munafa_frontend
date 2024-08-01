@@ -50,6 +50,7 @@ export default function NavbarComponent() {
     </Nav>
     <Nav pullRight>
     <Nav.Menu title="My Account">
+        <Nav.Item ><Link to="/transactions">Transactions</Link></Nav.Item>
         <Nav.Item onClick={handleLogout}>Log Out</Nav.Item>
         
         
