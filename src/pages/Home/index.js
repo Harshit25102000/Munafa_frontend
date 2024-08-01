@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './home.css';
+import { useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import Spinner from '../../components/Spinner';
 import { BACKEND_URL } from "../../config";
 import NavbarComponent from '../../components/Navbar';
+import NewsCarousel from '../../components/NewsCarousel';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import { Line } from 'react-chartjs-2';
@@ -32,6 +34,7 @@ function Home() {
     const [prices, setPrices] = useState([])
     const [indices, setIndex] = useState([])
     const [symbol,setSymbol] =useState("")
+    const [datasymbol,setDataSymbol] =useState("")
     const [bid,setBid] =useState("")
     const [ask,setAsk] =useState("")
     const [isAdd, setIsAdd] = useState(false)
@@ -49,6 +52,14 @@ function Home() {
         setIsPopupOpen(true);
     };
 
+    const handleMoreInfo = () => {
+        const infoData={infoSymbol:datasymbol}
+        console.log(infoData)
+        // navigate("/MoreInfo",{state:{data:infoData}})
+        const queryString = new URLSearchParams(infoData).toString();
+        navigate(`/MoreInfo?${queryString}`)
+    };
+
     const closePopup = (e) => {
         
         console.log("c")
@@ -57,6 +68,7 @@ function Home() {
     };
 
     const handleData=(action,symbol,bid,ask)=>{
+        console.log("hanled data")
         setAction(action);
         setSymbol(symbol);
         setBid(bid);
@@ -403,15 +415,16 @@ function Home() {
 
 
                 </header>
-
+                <NewsCarousel/>
                 <Container>
                     {isalert && (
                         <Alerts variant={variant} message={alertMessage} isalert={true} />
                     )}
+                    
                     <Row>
                         <Col>
                             <div>
-                                <h5 style={{ margin: "47px 0px 0px 50px", cursor: "pointer" }}>Watchlist<button style={{ "marginLeft": "10px", "background": "None" }} onClick={handleAdd}>+</button></h5>
+                                <h5 style={{ margin: "10px 0px 0px 50px", cursor: "pointer" }}>Watchlist<button style={{ "marginLeft": "10px", "background": "None" }} onClick={handleAdd}>+</button></h5>
                                 {isAdd && (
                                     <form class="form-inline">
                                         <div class="form-group mb-2">
@@ -434,7 +447,7 @@ function Home() {
                                         <Card.Body>
                                             <Row>
                                                 <Col>
-                                                    <Button onClick={() => fetchChartData(item.symbol,)} style={{ background: "None", border: "None", color: "black" }}><Card.Title style={{ fontWeight: "bold" }}>{item.symbol}</Card.Title></Button>
+                                                    <Button onClick={() => {fetchChartData(item.symbol);setDataSymbol(item.symbol)}} style={{ background: "None", border: "None", color: "black" }}><Card.Title style={{ fontWeight: "bold" }}>{item.symbol}</Card.Title></Button>
                                                     <Row style={{marginLeft:"2%"}}>
                                                     <Col>
                                                     <Card.Text style={{fontWeight:"bold"}}>
@@ -546,7 +559,7 @@ function Home() {
 
                                     <Line data={chartData} style={{ width: "35vw", height: "30vh" }} />
                                 </div>
-                                <Button style={{ background: "None", border: "None", color: "black", marginTop: "10px", fontWeight: "700" }}>View More Info</Button>
+                                <Button style={{ background: "None", border: "None", color: "black", marginTop: "10px", fontWeight: "700" }} onClick={handleMoreInfo}>View More Info</Button>
                             </div>)}
 
                         </Col>

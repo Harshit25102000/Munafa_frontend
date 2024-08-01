@@ -73,13 +73,12 @@ function Portfolio() {
 
 
                 } else {
-                    navigate("/");
+                    console.log(data.data)
 
                 }
             })
             .catch((error) => {
-                navigate("/");
-
+                console.log(error)
             });
 
 
