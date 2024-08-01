@@ -4,7 +4,12 @@ import Login from './pages/Login';
 import Signup from './pages/signup';
 import Home from './pages/Home';
 import Portfolio from './pages/Portfolio';
+
+import MoreInfo from './pages/MoreInfo'
+
+
 import Transactions from './pages/Transactions';
+
 import {
   BrowserRouter,
   RouterProvider,
@@ -21,7 +26,10 @@ function App() {
      <Route path="/signup" element={<Signup />}/>
      <Route path="/home" element={<Home />}/>
      <Route path="/portfolio" element={<Portfolio />}/>
+
+     <Route path="/MoreInfo" element={<MoreInfo/>}/>
      <Route path="/transactions" element={<Transactions />}/>
+
      
      </Routes>
       </BrowserRouter>

@@ -1,0 +1,163 @@
+/* MoreInfo.css */
+.more-info {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #333;
+    background-color: #f8f9fa;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+  
+  .more-info h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+  }
+  
+  .more-info h2 {
+    color: #2c3e50;
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #bdc3c7;
+    padding-bottom: 5px;
+  }
+  
+  .spread-info,
+  .current-price,
+  .financial-fundamentals,
+  .company-description,
+  .price-graph {
+    background-color: #ffffff;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .spread-info:hover,
+  .current-price:hover,
+  .financial-fundamentals:hover,
+  .company-description:hover,
+  .price-graph:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+  }
+  
+  .spread-info p,
+  .current-price p {
+    font-size: 2em;
+    font-weight: bold;
+    color: #27ae60;
+    text-align: center;
+  }
+  
+  .financial-fundamentals ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .financial-fundamentals li {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ecf0f1;
+    padding-bottom: 5px;
+  }
+  
+  .company-description p {
+    line-height: 1.6;
+    text-align: justify;
+  }
+  
+  .price-graph select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 1em;
+    background-color: #ecf0f1;
+  }
+  
+  .graph-placeholder {
+    height: 300px;
+    background-color: #ecf0f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-style: italic;
+    color: #7f8c8d;
+    border-radius: 4px;
+  }
+  
+  @media (max-width: 768px) {
+    .more-info {
+      padding: 10px;
+    }
+  
+    .more-info h1 {
+      font-size: 2em;
+    }
+  
+    .more-info h2 {
+      font-size: 1.3em;
+    }
+  
+    .spread-info p,
+    .current-price p {
+      font-size: 1.5em;
+    }
+  
+    .financial-fundamentals li {
+      font-size: 1em;
+    }
+  }
+
+  .price-graph {
+    background-color: #ffffff;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .price-graph:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+  }
+  
+  .price-graph h2 {
+    color: #2c3e50;
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #bdc3c7;
+    padding-bottom: 5px;
+  }
+  
+  .price-graph select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 1em;
+    background-color: #ecf0f1;
+  }
+  
+  @media (max-width: 768px) {
+    .price-graph {
+      padding: 10px;
+    }
+  
+    .price-graph h2 {
+      font-size: 1.3em;
+    }
+  }
